@@ -11,3 +11,6 @@ To install Nextcloud on a new machine, follow these steps:
 	- `postgres_password.txt` # put postgresql password to this file
 	- `postgres_user.txt` # put postgresql username to this file
 4. Run `docker-compose up`
+
+To use the Nextcloud command-line interface:
+`docker-compose exec --user www-data app php occ`
