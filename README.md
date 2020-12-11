@@ -1,4 +1,4 @@
-#nextcloud-docker
+# nextcloud-docker
 
 To install Nextcloud on a new machine, follow these steps:
 
