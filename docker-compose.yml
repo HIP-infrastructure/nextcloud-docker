@@ -1,0 +1,78 @@
+version: '3.2'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB_FILE=/run/secrets/postgres_db
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+    secrets:
+      - postgres_db
+      - postgres_password
+      - postgres_user
+    networks:
+      - backend
+
+  app:
+    image: nextcloud:20.0.2-fpm
+    restart: always
+    volumes:
+      - ./nextcloud:/var/www/html
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_DB_FILE=/run/secrets/postgres_db
+      - POSTGRES_USER_FILE=/run/secrets/postgres_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - NEXTCLOUD_ADMIN_PASSWORD_FILE=/run/secrets/nextcloud_admin_password
+      - NEXTCLOUD_ADMIN_USER_FILE=/run/secrets/nextcloud_admin_user
+    depends_on:
+      - db
+    secrets:
+      - nextcloud_admin_password
+      - nextcloud_admin_user
+      - postgres_db
+      - postgres_password
+      - postgres_user
+    networks:
+      - frontend
+      - backend
+
+  caddy:
+    container_name: caddy
+    image: caddy:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      #- ./caddy/secrets/cert.pem:/etc/caddy/cert.pem
+      #- ./caddy/secrets/key.pem:/etc/caddy/key.pem
+      # - ./caddy/site:/srv
+      - ./caddy/caddy_data:/data
+      #- ./caddy/caddy_config:/config
+      - ./nextcloud:/var/www/html
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    internal: true
+
+secrets:
+  nextcloud_admin_password:
+    file: ./secrets/nextcloud_admin_password.txt # put admin password to this file
+  nextcloud_admin_user:
+    file: ./secrets/nextcloud_admin_user.txt # put admin username to this file
+  postgres_db:
+    file: ./secrets/postgres_db.txt # put postgresql db name to this file
+  postgres_password:
+    file: ./secrets/postgres_password.txt # put postgresql password to this file
+  postgres_user:
+    file: ./secrets/postgres_user.txt # put postgresql username to this file

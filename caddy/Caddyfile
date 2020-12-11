@@ -1,0 +1,10 @@
+nextcloud.hbp.link
+#http://185.82.102.71
+
+encode gzip zstd
+
+#tls /etc/caddy/cert.pem /etc/caddy/key.pem
+
+root * /var/www/html
+file_server
+php_fastcgi app:9000
