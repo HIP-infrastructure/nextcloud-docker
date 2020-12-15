@@ -7,4 +7,26 @@ encode gzip zstd
 
 root * /var/www/html
 file_server
+log {
+	output file     /var/log/nextcloud.log
+	format single_field common_log
+}
 php_fastcgi app:9000
+
+
+# .htaccess / data / config / ... shouldn't be accessible from outside
+@forbidden {
+	path    /.htaccess
+	path    /data/*
+	path    /config/*
+	path    /db_structure
+	path    /.xml
+	path    /README
+	path    /3rdparty/*
+	path    /lib/*
+	path    /templates/*
+	path    /occ
+	path    /console.php
+}
+
+respond @forbidden 404
