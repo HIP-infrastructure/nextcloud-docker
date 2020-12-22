@@ -1,5 +1,4 @@
-nextcloud.hbp.link
-#http://185.82.102.71
+example.com
 
 encode gzip zstd
 

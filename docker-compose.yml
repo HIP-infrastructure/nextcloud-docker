@@ -16,20 +16,24 @@ services:
       - postgres_user
     networks:
       - backend
+      - frontend
 
   app:
-    image: nextcloud:20.0.3-fpm
+    image: nextcloud:${NEXTCLOUD_VERSION}
     restart: always
-    volumes:
+    volumes: &nextcloud_vol
       - ./nextcloud:/var/www/html
-    environment:
+      - ./crontab:/var/spool/cron/crontabs/www-data:ro
+    environment: &nextcloud_env
       - POSTGRES_HOST=db
       - POSTGRES_DB_FILE=/run/secrets/postgres_db
       - POSTGRES_USER_FILE=/run/secrets/postgres_user
       - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
       - NEXTCLOUD_ADMIN_PASSWORD_FILE=/run/secrets/nextcloud_admin_password
       - NEXTCLOUD_ADMIN_USER_FILE=/run/secrets/nextcloud_admin_user
-    depends_on:
+      - VIRTUAL_HOST=${NEXTCLOUD_VIRTUAL_HOST}
+      - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_VIRTUAL_HOST}
+    depends_on: &nextcloud_dep
       - db
     secrets:
       - nextcloud_admin_password
@@ -37,9 +41,17 @@ services:
       - postgres_db
       - postgres_password
       - postgres_user
-    networks:
-      - frontend
+    networks: &nextcloud_net
       - backend
+
+  cron:
+    image: nextcloud:${NEXTCLOUD_VERSION}
+    restart: always
+    volumes: *nextcloud_vol
+    environment: *nextcloud_env
+    entrypoint: /cron.sh
+    depends_on: *nextcloud_dep
+    networks: *nextcloud_net
 
   caddy:
     container_name: caddy
@@ -58,6 +70,7 @@ services:
       - ./nextcloud:/var/www/html
     networks:
       - frontend
+      - backend
 
 networks:
   frontend:

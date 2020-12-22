@@ -1,4 +1,5 @@
 secrets
-caddy/caddy_data
+caddy
 db
 nextcloud
+.env
