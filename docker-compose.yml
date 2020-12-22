@@ -16,7 +16,6 @@ services:
       - postgres_user
     networks:
       - backend
-      - frontend
 
   app:
     image: nextcloud:${NEXTCLOUD_VERSION}
@@ -43,6 +42,7 @@ services:
       - postgres_user
     networks: &nextcloud_net
       - backend
+      - frontend
 
   cron:
     image: nextcloud:${NEXTCLOUD_VERSION}
@@ -70,7 +70,6 @@ services:
       - ./nextcloud:/var/www/html
     networks:
       - frontend
-      - backend
 
 networks:
   frontend:
