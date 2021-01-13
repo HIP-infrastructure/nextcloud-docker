@@ -23,6 +23,7 @@ services:
     volumes: &nextcloud_vol
       - ./nextcloud:/var/www/html
       - ./crontab:/var/spool/cron/crontabs/www-data:ro
+      #- ./secrets/redis_password.txt:/run/secrets/redis_password
     environment: &nextcloud_env
       - POSTGRES_HOST=db
       - POSTGRES_DB_FILE=/run/secrets/postgres_db
@@ -32,8 +33,11 @@ services:
       - NEXTCLOUD_ADMIN_USER_FILE=/run/secrets/nextcloud_admin_user
       - VIRTUAL_HOST=${NEXTCLOUD_VIRTUAL_HOST}
       - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_VIRTUAL_HOST}
+      - REDIS_HOST=redis
+      #- REDIS_HOST_PASSWORD=/run/secrets/redis_password
     depends_on: &nextcloud_dep
       - db
+      - redis
     secrets:
       - nextcloud_admin_password
       - nextcloud_admin_user
@@ -52,6 +56,20 @@ services:
     entrypoint: /cron.sh
     depends_on: *nextcloud_dep
     networks: *nextcloud_net
+
+  redis:
+    image: redis:latest
+    #environment:
+    #  - REDIS_HOST_PASSWORD=/run/secrets/redis_password
+    #command: bash -c '[ "$$REDIS_HOST_PASSWORD" ] &&
+    #  ( cat "$$REDIS_HOST_PASSWORD" | xargs redis-server --appendonly yes --requirepass)' #|| redis-server --appendonly yes'
+    command: redis-server --appendonly yes
+    restart: always
+    volumes:
+      - ./redis/data:/data
+    #  - ./secrets/redis_password.txt:/run/secrets/redis_password
+    networks:
+      - backend
 
   caddy:
     container_name: caddy
@@ -88,3 +106,5 @@ secrets:
     file: ./secrets/postgres_password.txt # put postgresql password to this file
   postgres_user:
     file: ./secrets/postgres_user.txt # put postgresql username to this file
+  #  redis_password:
+    #file: ./secrets/redis_password.txt  # put redis password to this file
