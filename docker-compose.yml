@@ -21,7 +21,7 @@ services:
     image: nextcloud:${NEXTCLOUD_VERSION}
     restart: always
     volumes: &nextcloud_vol
-      - ./nextcloud:/var/www/html
+      - /mnt/nextcloud-dp/nextcloud:/var/www/html
       - ./crontab:/var/spool/cron/crontabs/www-data:ro
       #- ./secrets/redis_password.txt:/run/secrets/redis_password
     environment: &nextcloud_env
@@ -85,7 +85,7 @@ services:
       # - ./caddy/site:/srv
       - ./caddy/caddy_data:/data
       #- ./caddy/caddy_config:/config
-      - ./nextcloud:/var/www/html
+      - /mnt/nextcloud-dp/nextcloud:/var/www/html
     networks:
       - frontend
 
