@@ -22,6 +22,7 @@ services:
     restart: always
     volumes: &nextcloud_vol
       - /mnt/nextcloud-dp/nextcloud:/var/www/html
+      - /mnt/nextcloud-dp/php-settings:/usr/local/etc
       - ./crontab:/var/spool/cron/crontabs/www-data:ro
       #- ./secrets/redis_password.txt:/run/secrets/redis_password
     environment: &nextcloud_env
