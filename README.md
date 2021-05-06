@@ -12,7 +12,8 @@ To install Nextcloud on a new machine, follow these steps:
 	- `postgres_password.txt` # put postgresql password to this file
 	- `postgres_user.txt` # put postgresql username to this file
 4. Edit `.env.template`, set the version of Nextcloud FPM you wish to use as well as your domain, then save as `.env`
-5. Run `docker-compose up caddy db` and wait for the db to be installed then `^C`
-6. Run `docker-compose up -d`, and you should be ready to go!
+5. Run `./fix_crontab.sh`
+6. Run `docker-compose up caddy db` and wait for the db to be installed then `^C`
+7. Run `docker-compose up -d`, and you should be ready to go!
 
 To use the Nextcloud command-line interface run `./occ.sh`
