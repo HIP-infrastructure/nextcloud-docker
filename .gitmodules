@@ -1,0 +1,3 @@
+[submodule "hip"]
+	path = hip
+	url = git@github.com:HIP-infrastructure/hip.git
