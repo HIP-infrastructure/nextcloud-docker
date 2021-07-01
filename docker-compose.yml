@@ -90,9 +90,23 @@ services:
     networks:
       - frontend
 
+  gateway:
+    image: nicedexter/hip-gateway:latest
+    environment:
+        - APP_HOST=${APP_HOST}
+        - APP_BASIC_AUTH=${APP_BASIC_AUTH}
+    expose:
+      - 4000
+    networks:
+      - frontend
+    command: npm run start:dev
+
+
 networks:
   frontend:
     driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
   backend:
     internal: true
 
