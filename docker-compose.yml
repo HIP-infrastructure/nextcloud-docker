@@ -91,15 +91,31 @@ services:
       - frontend
 
   gateway:
-    image: nicedexter/hip-gateway:latest
+    image: hip/gateway:latest
     environment:
-        - APP_HOST=${APP_HOST}
-        - APP_BASIC_AUTH=${APP_BASIC_AUTH}
+      - REMOTE_APP_API=${REMOTE_APP_API}
+      - REMOTE_APP_BASIC_AUTH=${REMOTE_APP_BASIC_AUTH}
+      - PRIVATE_WEBDAV_URL=${PRIVATE_WEBDAV_URL}
+      - COLLAB_WEBDAV_URL=${COLLAB_WEBDAV_URL}
+      - COLLAB_WEBDAV_USERNAME=${COLLAB_WEBDAV_USERNAME}
+      - COLLAB_WEBDAV_PASSWORD=${COLLAB_WEBDAV_PASSWORD}
+      - HOSTNAME=${NEXTCLOUD_VIRTUAL_HOST}
     expose:
       - 4000
     networks:
       - frontend
     command: npm run start:dev
+
+  cache:
+    image: redis:latest
+    command: redis-server --appendonly yes
+    restart: always
+    volumes:
+      - ./gateway/redis/data:/data
+    expose: 
+     - 6379
+    networks:
+      - backend
 
 
 networks:
