@@ -91,7 +91,7 @@ services:
       - frontend
 
   gateway:
-    image: hip/gateway:latest
+    image: registry.hbp.link/hip/gateway/master:latest
     environment:
       - REMOTE_APP_API=${REMOTE_APP_API}
       - REMOTE_APP_BASIC_AUTH=${REMOTE_APP_BASIC_AUTH}
@@ -104,6 +104,7 @@ services:
       - 4000
     networks:
       - frontend
+      - backend
     command: npm run start:dev
 
   cache:
