@@ -91,7 +91,7 @@ services:
       - frontend
 
   gateway:
-    image: registry.hbp.link/hip/gateway/master:latest
+    image: registry.hbp.link/hip/gateway:0.0.1
     environment:
       - REMOTE_APP_API=${REMOTE_APP_API}
       - REMOTE_APP_BASIC_AUTH=${REMOTE_APP_BASIC_AUTH}
@@ -105,7 +105,7 @@ services:
     networks:
       - frontend
       - backend
-    command: npm run start:dev
+    command: npm run start
 
   cache:
     image: redis:latest
@@ -122,8 +122,8 @@ services:
 networks:
   frontend:
     driver: bridge
-    driver_opts:
-      com.docker.network.driver.mtu: 1450
+    # driver_opts:
+    #   com.docker.network.driver.mtu: 1450
   backend:
     internal: true
 
