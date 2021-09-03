@@ -15,6 +15,6 @@ To install Nextcloud on a new machine, follow these steps:
 5. Run `./fix_crontab.sh`
 6. Run `docker-compose up caddy db` and wait for the db to be installed then `^C`
 7. Run `docker-compose up -d`, and you should be ready to go!
-8. Optional: do `sudo ./install_hip_nextcloud_app.sh` to copy the HIP bundle into Nextcloud. You will have to enable it in the web interface.
+8. Optional: do `sudo ./deploy.sh` to copy the HIP bundle into Nextcloud. You will have to enable it in the web interface.
 
 To use the Nextcloud command-line interface run `./occ.sh`
