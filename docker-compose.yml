@@ -92,6 +92,7 @@ services:
 
   gateway:
     image: registry.hbp.link/hip/gateway/master:latest
+    restart: always
     environment:
       - REMOTE_APP_API=${REMOTE_APP_API}
       - REMOTE_APP_BASIC_AUTH=${REMOTE_APP_BASIC_AUTH}
