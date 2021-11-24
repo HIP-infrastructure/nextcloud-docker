@@ -24,6 +24,7 @@ services:
       - /mnt/nextcloud-dp/nextcloud:/var/www/html
       - /mnt/nextcloud-dp/php-settings:/usr/local/etc
       - ./crontab:/var/spool/cron/crontabs/www-data:ro
+      - ./scripts:/opt/nextcloud-scripts/
       #- ./secrets/redis_password.txt:/run/secrets/redis_password
     environment: &nextcloud_env
       - POSTGRES_HOST=db
@@ -48,6 +49,9 @@ services:
     networks: &nextcloud_net
       - backend
       - frontend
+    ports: 
+      - 9000
+    #command: sh -c "tail -f /dev/null"
 
   cron:
     image: nextcloud:${NEXTCLOUD_VERSION}
