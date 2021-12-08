@@ -50,11 +50,14 @@ services:
       - frontend
 
   cron:
-    image: nextcloud:${NEXTCLOUD_VERSION}
+    build:
+     context: ./nextcloud
+     args:
+      - NEXTCLOUD_VERSION=${NEXTCLOUD_VERSION}
     restart: always
     volumes: *nextcloud_vol
     environment: *nextcloud_env
-    entrypoint: /cron.sh
+    entrypoint: ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
     depends_on: *nextcloud_dep
     networks: *nextcloud_net
 

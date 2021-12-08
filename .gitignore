@@ -1,6 +1,5 @@
 secrets
 caddy
 db
-nextcloud
 redis
 .env
