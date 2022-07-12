@@ -18,7 +18,10 @@ services:
       - backend
 
   app:
-    image: nextcloud:${NEXTCLOUD_VERSION}
+    build:
+     context: ./nextcloud
+     args:
+      - NEXTCLOUD_VERSION=${NEXTCLOUD_VERSION}
     restart: always
     volumes: &nextcloud_vol
       - /mnt/nextcloud-dp/nextcloud:/var/www/html
@@ -48,6 +51,7 @@ services:
     networks: &nextcloud_net
       - backend
       - frontend
+    entrypoint: ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
   cron:
     build:
@@ -57,9 +61,9 @@ services:
     restart: always
     volumes: *nextcloud_vol
     environment: *nextcloud_env
-    entrypoint: ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
     depends_on: *nextcloud_dep
     networks: *nextcloud_net
+    entrypoint: ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
 
   redis:
     image: redis:latest
@@ -90,6 +94,9 @@ services:
       - ./caddy/caddy_data:/data
       #- ./caddy/caddy_config:/config
       - /mnt/nextcloud-dp/nextcloud:/var/www/html
+    environment:
+      - GATEWAY_REVERSE_PROXY=${GATEWAY_REVERSE_PROXY}
+      - HOSTNAME=${HOSTNAME}
     networks:
       - frontend
 
