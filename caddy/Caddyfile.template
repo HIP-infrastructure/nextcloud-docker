@@ -1,4 +1,4 @@
-https://example.com
+https://{$HOSTNAME}
 
 encode gzip zstd
 
@@ -10,6 +10,11 @@ log {
 	output file     /var/log/nextcloud.log
 	format single_field common_log
 }
+
+handle /api/v1/* {
+	reverse_proxy {$GATEWAY_REVERSE_PROXY}
+}
+
 php_fastcgi app:9000
 
 header {

@@ -89,6 +89,9 @@ services:
       - /mnt/nextcloud-dp/nextcloud:/var/www/html
     networks:
       - frontend
+    environment:
+      - GATEWAY_REVERSE_PROXY=${GATEWAY_REVERSE_PROXY}
+      - HOSTNAME=${HOSTNAME}
 
 networks:
   frontend:
