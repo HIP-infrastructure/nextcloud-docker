@@ -143,6 +143,7 @@ def watch_instances(instances):
     if instance.docker:
       occ_cmd = ['docker', 'exec', '-u'+instance.docker[0], instance.docker[1],
                  'php', instance.occ]
+      print(occ_cmd)
     else:
       occ_cmd = ['php', instance.occ]
     data_dir = subprocess.check_output(
@@ -211,6 +212,7 @@ def watch(folder):
   """
   data_prefix, path_prefix = folder.data_prefix, folder.path_prefix
   _logger.info('watching %s <=> %s', data_prefix, path_prefix)
+  _logger.info('path %s', os.path.abspath(data_prefix))
   data_prefix_len = len(data_prefix)
   scan_paths = set()
   inotifywait_proc = subprocess.Popen(
