@@ -134,10 +134,9 @@ def scan(task):
                                   '--shallow', '--quiet'])
   task.paths.clear()
 
-def watch_instances(instances):
-  """Setup inotifywait for the given instances and yield tasks.
+def get_workers(instances):
+  """Generate workers.
   """
-  instances = tuple(instances)
   folders = []
   for instance in instances:
     if instance.docker:
@@ -149,7 +148,11 @@ def watch_instances(instances):
     data_dir = subprocess.check_output(
         occ_cmd+['config:system:get', 'datadirectory'],
         universal_newlines=True).rstrip()
-    for user in instance.users:
+    users = json.loads(subprocess.check_output(
+        occ_cmd+['user:list', '--output=json'],
+        universal_newlines=True))
+    for user in users.keys():
+    #for user in instance.users:
       # path_prefix is the virtual folder recognized by Nextcloud
       # data_prefix is the actual filesystem folder
       # both should point to the same logical folder
@@ -157,6 +160,24 @@ def watch_instances(instances):
       data_prefix = data_dir+path_prefix
       folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
                             data_prefix=data_prefix))
+  
+    group_folders = json.loads(subprocess.check_output(
+        occ_cmd+['groupfolders:list', '--output=json'],
+        universal_newlines=True))
+    groups = json.loads(subprocess.check_output(
+        occ_cmd+['group:list', '--output=json'],
+        universal_newlines=True))
+    for group_folder in group_folders:
+      # find a user with access
+      user=None
+      group=list(group_folder["groups"].keys())[0]
+      user=groups[group][0]
+      if user is not None:
+        path_prefix = '/'+user+'/files/'+group_folder['mount_point'].rstrip('/')
+        data_prefix = data_dir+'/__groupfolders/'+str(group_folder["id"])
+        folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
+                                data_prefix=data_prefix))
+
     if instance.external_storage:
       _logger.debug('external storage scan is enabled for Nextcloud at %s',
                     os.path.dirname(instance.occ))
@@ -195,10 +216,19 @@ def watch_instances(instances):
           data_prefix = storage['configuration']['datadir'].rstrip('/')
           folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
                                 data_prefix=data_prefix))
-  workers = tuple(map(watch, folders))
+  return tuple(map(watch, folders))
+
+def watch_instances(instances):
+  """Setup inotifywait for the given instances and yield tasks.
+  """
+  instances = tuple(instances)
   min_interval = min(instance.interval for instance in instances)
+  reset_worker = 0
   while True:
     interval = min_interval
+    if reset_worker <= 0:
+      reset_worker = min_interval * 300
+      workers = get_workers(instances)
     for worker in workers:
       task = next(worker)
       if task.paths:
@@ -206,6 +236,7 @@ def watch_instances(instances):
         yield task
     if interval is not None:
       time.sleep(interval)
+      reset_worker -= min_interval
 
 def watch(folder):
   """Setup inotifywait for the given folder and yield tasks.
