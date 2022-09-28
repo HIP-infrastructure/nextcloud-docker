@@ -214,7 +214,7 @@ def watch(folder):
   data_prefix_len = len(data_prefix)
   scan_paths = set()
   inotifywait_proc = subprocess.Popen(
-      ['inotifywait', '--event=create,modify,move,delete', r'--exclude=/\.',
+      ['inotifywait', '--event=create,modify,move,delete',
        '--recursive', '--quiet', '--format=%e/%f%w/', '--monitor',
        os.path.abspath(data_prefix)],   # relative path won't work
       stdout=subprocess.PIPE, bufsize=0)
