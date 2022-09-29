@@ -168,15 +168,20 @@ def get_workers(instances):
         occ_cmd+['group:list', '--output=json'],
         universal_newlines=True))
     for group_folder in group_folders:
-      # find a user with access
+      # try to find a user with access
       user=None
-      group=list(group_folder["groups"].keys())[0]
-      user=groups[group][0]
-      if user is not None:
-        path_prefix = '/'+user+'/files/'+group_folder['mount_point'].rstrip('/')
-        data_prefix = data_dir+'/__groupfolders/'+str(group_folder["id"])
-        folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
-                                data_prefix=data_prefix))
+      # make sure we have a group assigned to the group folder
+      group_folder_groups = group_folder["groups"]
+      if(isinstance(group_folder_groups,dict) and group_folder_groups):
+        group=list(group_folder["groups"].keys())[0]
+        # make sure the group has at least one user
+        if(groups[group]):
+          user=groups[group][0]
+          if user is not None:
+            path_prefix = '/'+user+'/files/'+group_folder['mount_point'].rstrip('/')
+            data_prefix = data_dir+'/__groupfolders/'+str(group_folder["id"])
+            folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
+                                    data_prefix=data_prefix))
 
     if instance.external_storage:
       _logger.debug('external storage scan is enabled for Nextcloud at %s',
