@@ -157,8 +157,9 @@ def get_workers(instances):
       # both should point to the same logical folder
       path_prefix = '/'+user+'/files'
       data_prefix = data_dir+path_prefix
-      folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
-                            data_prefix=data_prefix))
+      if(os.path.isdir(data_prefix)):
+        folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
+                              data_prefix=data_prefix))
     group_folders = json.loads(subprocess.check_output(
         occ_cmd+['groupfolders:list', '--output=json'],
         universal_newlines=True))
