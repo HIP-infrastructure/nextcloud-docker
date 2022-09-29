@@ -152,7 +152,6 @@ def get_workers(instances):
         occ_cmd+['user:list', '--output=json'],
         universal_newlines=True))
     for user in users.keys():
-    #for user in instance.users:
       # path_prefix is the virtual folder recognized by Nextcloud
       # data_prefix is the actual filesystem folder
       # both should point to the same logical folder
@@ -160,7 +159,6 @@ def get_workers(instances):
       data_prefix = data_dir+path_prefix
       folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
                             data_prefix=data_prefix))
-  
     group_folders = json.loads(subprocess.check_output(
         occ_cmd+['groupfolders:list', '--output=json'],
         universal_newlines=True))
@@ -182,7 +180,6 @@ def get_workers(instances):
             data_prefix = data_dir+'/__groupfolders/'+str(group_folder["id"])
             folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
                                     data_prefix=data_prefix))
-
     if instance.external_storage:
       _logger.debug('external storage scan is enabled for Nextcloud at %s',
                     os.path.dirname(instance.occ))
@@ -228,11 +225,11 @@ def watch_instances(instances):
   """
   instances = tuple(instances)
   min_interval = min(instance.interval for instance in instances)
-  reset_worker = 0
+  reset_workers = 0
   while True:
     interval = min_interval
-    if reset_worker <= 0:
-      reset_worker = min_interval * 300
+    if reset_workers <= 0:
+      reset_workers = min_interval * 300
       workers = get_workers(instances)
     for worker in workers:
       task = next(worker)
@@ -241,7 +238,7 @@ def watch_instances(instances):
         yield task
     if interval is not None:
       time.sleep(interval)
-      reset_worker -= min_interval
+      reset_workers -= min_interval
 
 def watch(folder):
   """Setup inotifywait for the given folder and yield tasks.
