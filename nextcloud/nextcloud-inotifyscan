@@ -20,7 +20,8 @@ try:
 except ImportError:
   import ConfigParser as configparser
 
-logging.basicConfig(format='%(levelname)s - %(message)s')
+logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
 _logger = logging.getLogger()
 
 Instance = collections.namedtuple(
@@ -134,7 +135,7 @@ def scan(task):
                                   '--shallow', '--quiet'])
   task.paths.clear()
 
-def get_workers(instances):
+def get_workers(instances, paths_watched):
   """Generate workers.
   """
   folders = []
@@ -158,8 +159,12 @@ def get_workers(instances):
       path_prefix = '/'+user+'/files'
       data_prefix = data_dir+path_prefix
       if(os.path.isdir(data_prefix)):
-        folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
-                              data_prefix=data_prefix))
+        # only add if we aren't already watching that path
+        if data_prefix not in paths_watched:
+          paths_watched.add(data_prefix)
+          folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
+                                data_prefix=data_prefix))
+          _logger.debug('Watching user %s.', user)
     group_folders = json.loads(subprocess.check_output(
         occ_cmd+['groupfolders:list', '--output=json'],
         universal_newlines=True))
@@ -179,8 +184,12 @@ def get_workers(instances):
           if user is not None:
             path_prefix = '/'+user+'/files/'+group_folder['mount_point'].rstrip('/')
             data_prefix = data_dir+'/__groupfolders/'+str(group_folder["id"])
-            folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
+            # only add if we aren't already watching that path
+            if data_prefix not in paths_watched:
+              paths_watched.add(data_prefix)
+              folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
                                     data_prefix=data_prefix))
+              _logger.debug('Watching group folder %s.', group_folder['mount_point'])
     if instance.external_storage:
       _logger.debug('external storage scan is enabled for Nextcloud at %s',
                     os.path.dirname(instance.occ))
@@ -217,13 +226,18 @@ def get_workers(instances):
         if user is not None:
           path_prefix = '/'+user+'/files'+storage['mount_point'].rstrip('/')
           data_prefix = storage['configuration']['datadir'].rstrip('/')
-          folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
-                                data_prefix=data_prefix))
-  return tuple(map(watch, folders))
+          # only add if we aren't already watching that path
+          if data_prefix not in paths_watched:
+            paths_watched.add(data_prefix)
+            folders.append(Folder(occ_cmd=occ_cmd, path_prefix=path_prefix,
+                                  data_prefix=data_prefix))
+  return paths_watched, tuple(map(watch, folders))
 
 def watch_instances(instances):
   """Setup inotifywait for the given instances and yield tasks.
   """
+  paths_watched = set()
+  workers = tuple()
   instances = tuple(instances)
   min_interval = min(instance.interval for instance in instances)
   reset_workers = 0
@@ -231,7 +245,8 @@ def watch_instances(instances):
     interval = min_interval
     if reset_workers <= 0:
       reset_workers = min_interval * 300
-      workers = get_workers(instances)
+      paths_watched, new_workers = get_workers(instances, paths_watched)
+      workers = workers + new_workers
     for worker in workers:
       task = next(worker)
       if task.paths:
@@ -246,7 +261,7 @@ def watch(folder):
   """
   data_prefix, path_prefix = folder.data_prefix, folder.path_prefix
   _logger.info('watching %s <=> %s', data_prefix, path_prefix)
-  _logger.info('path %s', os.path.abspath(data_prefix))
+  _logger.debug('path %s', os.path.abspath(data_prefix))
   data_prefix_len = len(data_prefix)
   scan_paths = set()
   inotifywait_proc = subprocess.Popen(
