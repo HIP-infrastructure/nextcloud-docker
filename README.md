@@ -17,3 +17,7 @@ To install Nextcloud on a new machine, follow these steps:
 7. Run `docker-compose up -d`, and you should be ready to go!
 
 To use the Nextcloud command-line interface run `./occ.sh`
+
+## Acknowledgement
+
+This research was supported by the EBRAINS research infrastructure, funded from the European Union’s Horizon 2020 Framework Programme for Research and Innovation under the Specific Grant Agreement No. 945539 (Human Brain Project SGA3).
