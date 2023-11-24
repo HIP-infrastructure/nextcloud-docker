@@ -2,8 +2,12 @@ version: '3.2'
 
 services:
   db:
-    image: postgres
+    container_name: db
+    hostname: db
+    image: postgres:${POSTGRES_VERSION}
     restart: always
+    ports:
+      - 127.0.0.1:5432:5432
     volumes:
       - ./db:/var/lib/postgresql/data
     environment:
@@ -16,10 +20,15 @@ services:
       - postgres_user
     networks:
       - backend
+      - frontend
 
   app:
+    container_name: app
+    hostname: app
     image: nextcloud:${NEXTCLOUD_VERSION}
     restart: always
+    ports:
+      - 127.0.0.1:9000:9000
     volumes: &nextcloud_vol
       - /mnt/nextcloud-dp/nextcloud:/var/www/html
       - /mnt/nextcloud-dp/php-settings:/usr/local/etc
@@ -50,6 +59,8 @@ services:
       - frontend
 
   cron:
+    container_name: cron
+    hostname: cron
     build:
      context: ./nextcloud
      args:
@@ -59,9 +70,11 @@ services:
     environment: *nextcloud_env
     depends_on: *nextcloud_dep
     networks: *nextcloud_net
-    entrypoint: ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+    entrypoint: ['/usr/bin/supervisord', '-c', '/supervisord.conf']
 
   redis:
+    container_name: redis
+    hostname: redis
     image: redis:latest
     #environment:
     #  - REDIS_HOST_PASSWORD=/run/secrets/redis_password
@@ -75,26 +88,19 @@ services:
     networks:
       - backend
 
-  caddy:
-    container_name: caddy
-    image: caddy:latest
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
-      #- ./caddy/secrets/cert.pem:/etc/caddy/cert.pem
-      #- ./caddy/secrets/key.pem:/etc/caddy/key.pem
-      # - ./caddy/site:/srv
-      - ./caddy/caddy_data:/data
-      #- ./caddy/caddy_config:/config
-      - /mnt/nextcloud-dp/nextcloud:/var/www/html
-    environment:
-      - GATEWAY_REVERSE_PROXY=${GATEWAY_REVERSE_PROXY}
-      - HOSTNAME=${HOSTNAME}
-    networks:
-      - frontend
+  # caddy:
+  #   container_name: caddy
+  #   image: caddy:latest
+  #   restart: always
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+
+  #     - ./caddy/caddy_data:/data
+  #     - /mnt/nextcloud-dp/nextcloud:/var/www/html
+
 
 networks:
   frontend:
