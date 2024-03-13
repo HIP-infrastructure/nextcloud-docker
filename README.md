@@ -14,17 +14,26 @@ To install Nextcloud on a new machine, follow these steps:
 5. Edit `.env.template`, set the version of Nextcloud FPM you wish to use as well as your domain, then save as `.env`
 6. Run `./fix_crontab.sh`
 7. Run `docker-compose up caddy db` and wait for the db to be installed then `^C`
-8. Run `docker-compose up -d`, and you should be ready to go!
+8. Run `docker-compose up -d` Nextcloud will fail. Don't bother
+```
+	docker compose --env-file ./.env -f docker-compose.yml stop
+	sudo mkdir -p /var/www
+	[ ! -L /var/www/html ] && sudo ln -sf ${NC_DATA_FOLDER} /var/www/html || true
+	sudo chown -R www-data:www-data /var/www/html
+	sudo rm -rf ${NC_DATA_FOLDER}/core/skeleton
+	sudo mkdir -p ${NC_DATA_FOLDER}/core/skeleton
+	sudo cp hip/skeleton/* ${NC_DATA_FOLDER}/core/skeleton
+	sudo chown -R www-data:www-data ${NC_DATA_FOLDER}/core/skeleton
+	docker compose --env-file ./.env -f docker-compose.yml build cron
+	sudo chown root:root nextcloud-docker/crontab
+	docker compose --env-file ./.env -f docker-compose.yml up -d
+```
 
-To use the Nextcloud command-line interface run `./occ.sh`
-
-- `make install-nextcloud` Nextcloud will 
-- fail. Don't bother
 - Once Nextcloud is installed, we need to replace the created php-settings by our own in order to parametrize it for docker etc.
   - `sudo rm -rf /mnt/nextcloud-dp/php-settings`
   - `sudo cp -r php-settings /mnt/nextcloud-dp`
 
-- `make install-nextcloud` It will fail, again. 
+- Redo the above sequence  It will fail, again. 
   - `make occ c=maintenance:install`
   - Nextcloud install asks fo a password for admin, use the one provided in secrets in [nextcloud_admin_password.txt]
 
