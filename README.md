@@ -2,8 +2,8 @@
 
 To install Nextcloud on a new machine, follow these steps:
 
-1. Install docker and docker-compose on your machine.
-2. Edit `caddy/Caddyfile.template`, add your domain name and save as `caddy/Caddyfile`
+1. Clone this repository
+2. Install docker and docker compose on your machine.
 3. Get the latest inotify scan there https://github.com/HIP-infrastructure/nextcloud-inotifyscan/blob/hip/nextcloud-inotifyscan and add it to `nextcloud/nextcloud-inotifyscan`
 4. Create a folder named `secrets` and add the following txt files to it :
 	- `nextcloud_admin_password.txt` # put admin password to this file
@@ -13,20 +13,17 @@ To install Nextcloud on a new machine, follow these steps:
 	- `postgres_user.txt` # put postgresql username to this file
 5. Edit `.env.template`, set the version of Nextcloud FPM you wish to use as well as your domain, then save as `.env`
 6. Run `./fix_crontab.sh`
-7. Run `docker-compose up caddy db` and wait for the db to be installed then `^C`
-8. Run `docker-compose up -d` Nextcloud will fail. Don't bother
+7. Run `docker compose up -d` Nextcloud will fail. Don't bother
 ```
-	docker compose --env-file ./.env -f docker-compose.yml stop
+	docker compose --env-file ./.env -f docker compose.yml stop
 	sudo mkdir -p /var/www
-	[ ! -L /var/www/html ] && sudo ln -sf ${NC_DATA_FOLDER} /var/www/html || true
+	sudo mkdir -p /mnt/nextcloud-dp/nextcloud
+	sudo ln -sf /mnt/nextcloud-dp/nextcloud /var/www/html
 	sudo chown -R www-data:www-data /var/www/html
-	sudo rm -rf ${NC_DATA_FOLDER}/core/skeleton
-	sudo mkdir -p ${NC_DATA_FOLDER}/core/skeleton
-	sudo cp hip/skeleton/* ${NC_DATA_FOLDER}/core/skeleton
-	sudo chown -R www-data:www-data ${NC_DATA_FOLDER}/core/skeleton
-	docker compose --env-file ./.env -f docker-compose.yml build cron
-	sudo chown root:root nextcloud-docker/crontab
-	docker compose --env-file ./.env -f docker-compose.yml up -d
+	docker compose --env-file ./.env -f docker compose.yml build cron
+	sudo chown root:root nextcloud
+	docker compose --env-file ./.env -f docker compose.yml up -d
+  docker compose --env-file ./.env -f docker compose.yml stop
 ```
 
 - Once Nextcloud is installed, we need to replace the created php-settings by our own in order to parametrize it for docker etc.
@@ -34,7 +31,7 @@ To install Nextcloud on a new machine, follow these steps:
   - `sudo cp -r php-settings /mnt/nextcloud-dp`
 
 - Redo the above sequence  It will fail, again. 
-  - `make occ c=maintenance:install`
+  - `docker compose exec --user www-data app php occ maintenance:install`
   - Nextcloud install asks fo a password for admin, use the one provided in secrets in [nextcloud_admin_password.txt]
 
 - Add some params to the Nextcloud php config in  `/mnt/nextcloud-dp/nextcloud/config/config.php`
@@ -44,7 +41,6 @@ To install Nextcloud on a new machine, follow these steps:
     'defaultapp' => 'hip',
     'trusted_domains' => ['hip.local'],
 ```
-- `make install`
 - Open your browser to your ip or hostname
 - Access NextCloud with admin/[nextcloud_admin_password.txt]
 - NextCloud could complain about Access through untrusted domain, and in that case, re-add your domain to the `/mnt/nextcloud-dp/nextcloud/config/config.php` file again. This yhould fix it.
