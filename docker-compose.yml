@@ -11,13 +11,9 @@ services:
     volumes:
       - ./db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB_FILE=/run/secrets/postgres_db
-      - POSTGRES_USER_FILE=/run/secrets/postgres_user
-      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
-    secrets:
-      - postgres_db
-      - postgres_password
-      - postgres_user
+      - POSTGRES_DB=postgres_db
+      - POSTGRES_USER=postgres_user
+      - POSTGRES_PASSWORD=postgres_password
     networks:
       - backend
       - frontend
@@ -41,11 +37,11 @@ services:
       #- ./secrets/redis_password.txt:/run/secrets/redis_password
     environment: &nextcloud_env
       - POSTGRES_HOST=db
-      - POSTGRES_DB_FILE=/run/secrets/postgres_db
-      - POSTGRES_USER_FILE=/run/secrets/postgres_user
-      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
-      - NEXTCLOUD_ADMIN_PASSWORD_FILE=/run/secrets/nextcloud_admin_password
-      - NEXTCLOUD_ADMIN_USER_FILE=/run/secrets/nextcloud_admin_user
+      - POSTGRES_DB=postgres_db
+      - POSTGRES_USER=postgres_user
+      - POSTGRES_PASSWORD=postgres_password
+      - NEXTCLOUD_ADMIN_PASSWORD=nextcloud_admin_password
+      - NEXTCLOUD_ADMIN_USER=nextcloud_admin_user
       - VIRTUAL_HOST=${NEXTCLOUD_VIRTUAL_HOST}
       - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_VIRTUAL_HOST}
       - REDIS_HOST=redis
@@ -53,12 +49,6 @@ services:
     depends_on: &nextcloud_dep
       - db
       - redis
-    secrets:
-      - nextcloud_admin_password
-      - nextcloud_admin_user
-      - postgres_db
-      - postgres_password
-      - postgres_user
     networks: &nextcloud_net
       - backend
       - frontend
@@ -91,8 +81,8 @@ services:
       - ./crontab:/var/spool/cron/crontabs/www-data:ro
       - ./add_custom_provider.sh:/add_custom_provider.sh
     environment:
-      - NEXTCLOUD_ADMIN_PASSWORD_FILE=/run/secrets/nextcloud_admin_password
-      - NEXTCLOUD_ADMIN_USER_FILE=/run/secrets/nextcloud_admin_user
+      - NEXTCLOUD_ADMIN_PASSWORD=nextcloud_admin_password
+      - NEXTCLOUD_ADMIN_USER=nextcloud_admin_user
       - VIRTUAL_HOST=${NEXTCLOUD_VIRTUAL_HOST}
       - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_VIRTUAL_HOST}
       - BASE_URL=http://keycloak.local:8080
@@ -147,17 +137,3 @@ networks:
     internal: true
   keycloak:
     name: keycloak
-
-secrets:
-  nextcloud_admin_password:
-    file: ./secrets/nextcloud_admin_password.txt # put admin password to this file
-  nextcloud_admin_user:
-    file: ./secrets/nextcloud_admin_user.txt # put admin username to this file
-  postgres_db:
-    file: ./secrets/postgres_db.txt # put postgresql db name to this file
-  postgres_password:
-    file: ./secrets/postgres_password.txt # put postgresql password to this file
-  postgres_user:
-    file: ./secrets/postgres_user.txt # put postgresql username to this file
-  #  redis_password:
-    #file: ./secrets/redis_password.txt  # put redis password to this file
