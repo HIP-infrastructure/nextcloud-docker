@@ -147,7 +147,6 @@ networks:
     internal: true
   keycloak:
     name: keycloak
-    external: true
 
 secrets:
   nextcloud_admin_password:
