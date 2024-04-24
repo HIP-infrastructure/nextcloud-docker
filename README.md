@@ -15,15 +15,15 @@ To install Nextcloud on a new machine, follow these steps:
 6. Run `./fix_crontab.sh`
 7. Run `docker compose up -d` Nextcloud will fail. Don't bother
 ```
-	docker compose --env-file ./.env -f docker compose.yml stop
+	docker compose --env-file ./.env -f docker-compose.yml stop
 	sudo mkdir -p /var/www
 	sudo mkdir -p /mnt/nextcloud-dp/nextcloud
 	sudo ln -sf /mnt/nextcloud-dp/nextcloud /var/www/html
 	sudo chown -R www-data:www-data /var/www/html
-	docker compose --env-file ./.env -f docker compose.yml build cron
+	docker compose --env-file ./.env -f docker-compose.yml build cron
 	sudo chown root:root nextcloud
-	docker compose --env-file ./.env -f docker compose.yml up -d
-  docker compose --env-file ./.env -f docker compose.yml stop
+	docker compose --env-file ./.env -f docker-compose.yml up -d
+  	docker compose --env-file ./.env -f docker-compose.yml stop
 ```
 
 - Once Nextcloud is installed, we need to replace the created php-settings by our own in order to parametrize it for docker etc.
