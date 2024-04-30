@@ -34,14 +34,18 @@ docker compose --env-file ./.env -f docker-compose.yml up -d
 
 Then perform this command, replace the variables by yours. 
   - `docker compose exec --user www-data app php occ maintenance:install --database "pgsql"  --database-name "nextcloud_db"  --database-user "root" --database-pass "password" --admin-user "admin"  --admin-pass "password"`
+  - Will fails because NC doesn't take "--database-host" into account
 
-- Add some params to the Nextcloud php config in  `/mnt/nextcloud-dp/nextcloud/config/config.php`
+- So, add some params to the Nextcloud php config in  `/mnt/nextcloud-dp/nextcloud/config/config.php`
 ```
     'htaccess.RewriteBase' => '/',    
     'htaccess.IgnoreFrontController' => true,     
     'defaultapp' => 'hip',
-    'trusted_domains' => ['localhost'],
+    'dbhost' => 'db',
+    'trusted_domains' => ['localhost']
 ```
+
+- redo `docker compose exec --user www-data app php occ maintenance:install --database "pgsql"  --database-name "nextcloud_db"  --database-user "root" --database-pass "password" --admin-user "admin"  --admin-pass "password"`
 - Open your browser to your ip or hostname
 - Access NextCloud with admin/[nextcloud_admin_password.txt]
 - NextCloud could complain about Access through untrusted domain, and in that case, re-add your domain to the `/mnt/nextcloud-dp/nextcloud/config/config.php` file again. This yhould fix it.
