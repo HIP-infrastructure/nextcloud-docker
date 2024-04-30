@@ -25,14 +25,15 @@ To install Nextcloud on a new machine, follow these steps:
 	docker compose --env-file ./.env -f docker-compose.yml up -d
 ```
 
+Once Nextcloud is installed, we need to replace the created php-settings by our own in order to parametrize it for docker etc.
+
+docker compose --env-file ./.env -f docker-compose.yml stop
+sudo rm -rf /mnt/nextcloud-dp/php-settings
+sudo cp -r php-settings /mnt/nextcloud-dp
+docker compose --env-file ./.env -f docker-compose.yml up -d
+
 Then perform this command, replace the variables by yours. 
-  - `docker compose exec --user www-data app php occ maintenance:install --database "postgres"  --database-name "nextcloud_db"  --database-user "root" --database-pass "password" --admin-user "admin"  --admin-pass "password"`
-
-- Once Nextcloud is installed, we need to replace the created php-settings by our own in order to parametrize it for docker etc.
-  - `docker compose --env-file ./.env -f docker-compose.yml stop`
-  - `sudo rm -rf /mnt/nextcloud-dp/php-settings`
-  - `sudo cp -r php-settings /mnt/nextcloud-dp`
-
+  - `docker compose exec --user www-data app php occ maintenance:install --database "pgsql"  --database-name "nextcloud_db"  --database-user "root" --database-pass "password" --admin-user "admin"  --admin-pass "password"`
 
 - Add some params to the Nextcloud php config in  `/mnt/nextcloud-dp/nextcloud/config/config.php`
 ```
