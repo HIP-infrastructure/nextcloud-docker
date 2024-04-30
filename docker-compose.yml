@@ -100,7 +100,8 @@ services:
 
   #     - ./caddy/caddy_data:/data
   #     - /mnt/nextcloud-dp/nextcloud:/var/www/html
-
+  # networks:
+      # - frontend
 
 networks:
   frontend:
