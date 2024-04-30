@@ -23,23 +23,23 @@ To install Nextcloud on a new machine, follow these steps:
 	docker compose --env-file ./.env -f docker-compose.yml build cron
 	sudo chown root:root nextcloud
 	docker compose --env-file ./.env -f docker-compose.yml up -d
-  	docker compose --env-file ./.env -f docker-compose.yml stop
 ```
 
+Then perform this command, replace the variables by yours. 
+  - `docker compose exec --user www-data app php occ maintenance:install --database "postgres"  --database-name "nextcloud_db"  --database-user "root" --database-pass "password" --admin-user "admin"  --admin-pass "password"`
+
 - Once Nextcloud is installed, we need to replace the created php-settings by our own in order to parametrize it for docker etc.
+  - `docker compose --env-file ./.env -f docker-compose.yml stop`
   - `sudo rm -rf /mnt/nextcloud-dp/php-settings`
   - `sudo cp -r php-settings /mnt/nextcloud-dp`
 
-- Redo the above sequence  It will fail, again. 
-  - `docker compose exec --user www-data app php occ maintenance:install`
-  - Nextcloud install asks fo a password for admin, use the one provided in secrets in [nextcloud_admin_password.txt]
 
 - Add some params to the Nextcloud php config in  `/mnt/nextcloud-dp/nextcloud/config/config.php`
 ```
     'htaccess.RewriteBase' => '/',    
     'htaccess.IgnoreFrontController' => true,     
     'defaultapp' => 'hip',
-    'trusted_domains' => ['hip.local'],
+    'trusted_domains' => ['localhost'],
 ```
 - Open your browser to your ip or hostname
 - Access NextCloud with admin/[nextcloud_admin_password.txt]
