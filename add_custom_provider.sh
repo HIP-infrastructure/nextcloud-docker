@@ -39,6 +39,9 @@ echo "$json"
 echo "---"
 
 php occ config:app:set sociallogin custom_providers --value="$json"
+php occ config:app:set sociallogin update_profile_on_login --value=1
+php occ config:app:set sociallogin hide_default_login --value=1
+php occ config:app:set sociallogin button_text_wo_prefix --value=1
 # if [ -n "$provider" ]; then 
 #     php occ config:app:set sociallogin custom_providers --value="$json"
 # fi
