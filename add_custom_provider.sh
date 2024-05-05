@@ -26,7 +26,27 @@ json=$(cat <<-EOF
             "style": "",
             "defaultGroup": "",
             "groupMapping": {
-                "$GROUP_NAME": "$GROUP_NC_NAME"
+                "$GROUP_NAME": "$GROUP_NC_NAME",
+                "epfl-esl": "epfl-esl",
+                "uka": "uka",
+                "vr-vis": "vr-vis",
+                "ucl": "ucl",
+                "chuc": "chuc",
+                "amu-ns": "amu-ns",
+                "chuv": "chuv",
+                "amu-tng": "amu-tng",
+                "aphm": "aphm",
+                "chru-lille": "chru-lille",
+                "chm": "chm",
+                "chuga": "chuga",
+                "chu-lyon": "chu-lyon",
+                "fnusa": "fnusa",
+                "hus": "hus",
+                "chru-s": "chru-s",
+                "ou-sse": "ou-sse",
+                "psmar": "psmar",
+                "ucbl": "ucbl",
+                "umcu": "umcu"
             }
         }
     ]
