@@ -62,6 +62,7 @@ php occ config:app:set sociallogin custom_providers --value="$json"
 php occ config:app:set sociallogin update_profile_on_login --value=1
 php occ config:app:set sociallogin hide_default_login --value=1
 php occ config:app:set sociallogin button_text_wo_prefix --value=1
+php occ config:system:set trusted_domains 1 --value="$NEXTCLOUD_TRUSTED_DOMAINS"
 # if [ -n "$provider" ]; then 
 #     php occ config:app:set sociallogin custom_providers --value="$json"
 # fi
