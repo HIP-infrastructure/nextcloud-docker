@@ -85,7 +85,7 @@ services:
       - NEXTCLOUD_ADMIN_USER=nextcloud_admin_user
       - VIRTUAL_HOST=${NEXTCLOUD_VIRTUAL_HOST}
       - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_VIRTUAL_HOST}
-      - BASE_URL=http://keycloak.local:8080
+      - BASE_URL=${IAM_BASE_URL}
       - REALM_NAME=hip
       - CLIENT_ID=hip
       - CLIENT_SECRET=supersecret
