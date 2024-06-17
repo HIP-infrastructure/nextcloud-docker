@@ -13,7 +13,7 @@ json=$(cat <<-EOF
         {
             "name": "keycloak",
             "title": "Log in",
-            "authorizeUrl": "$BASE_URL/realms/$REALM_NAME/protocol/openid-connect/auth",
+            "authorizeUrl": "$BASE_EXTERNAL_URL/realms/$REALM_NAME/protocol/openid-connect/auth",
             "tokenUrl": "$BASE_URL/realms/$REALM_NAME/protocol/openid-connect/token",
             "displayNameClaim": "name",
             "userNameClaim": "preferred_username",
