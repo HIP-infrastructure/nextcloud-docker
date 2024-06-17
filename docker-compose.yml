@@ -73,6 +73,7 @@ services:
   
   sociallogin_init:
     container_name: sociallogin_init
+    restart: on-failure
     image: nextcloud:${NEXTCLOUD_VERSION}
     volumes: 
       # - <<: *nextcloud_vol
