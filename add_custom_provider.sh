@@ -63,6 +63,10 @@ php occ config:app:set sociallogin update_profile_on_login --value=1
 php occ config:app:set sociallogin hide_default_login --value=1
 php occ config:app:set sociallogin button_text_wo_prefix --value=1
 php occ config:system:set trusted_domains 1 --value="$NEXTCLOUD_TRUSTED_DOMAINS"
+php occ theming:config color "$BACKGROUND_COLOR"
+if [ -e "/var/www/html/shared/logo.png" ]; then
+    php occ theming:config logo "/var/www/html/shared/logo.png"
+fi
 # if [ -n "$provider" ]; then 
 #     php occ config:app:set sociallogin custom_providers --value="$json"
 # fi
