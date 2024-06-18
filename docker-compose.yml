@@ -46,6 +46,7 @@ services:
       - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_VIRTUAL_HOST}
       - REDIS_HOST=redis
       - ALLOWED_FRAME_DOMAIN=${ALLOWED_FRAME_DOMAIN}
+      - BACKGROUND_COLOR=${BACKGROUND_COLOR}
       #- REDIS_HOST_PASSWORD=/run/secrets/redis_password
     depends_on: &nextcloud_dep
       - db
