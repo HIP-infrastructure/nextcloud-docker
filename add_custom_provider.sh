@@ -6,6 +6,8 @@ echo "provider"
 echo "$provider"
 echo "---"
 
+redirect_uri_encoded=$(echo -n "$BASE_URL" | php -r 'echo rawurlencode(fgets(STDIN));')
+
 
 json=$(cat <<-EOF
 {
@@ -13,12 +15,12 @@ json=$(cat <<-EOF
         {
             "name": "keycloak",
             "title": "Log in",
-            "authorizeUrl": "$BASE_EXTERNAL_URL/realms/$REALM_NAME/protocol/openid-connect/auth",
-            "tokenUrl": "$BASE_URL/realms/$REALM_NAME/protocol/openid-connect/token",
+            "authorizeUrl": "$IAM_BASE_EXTERNAL_URL/realms/$REALM_NAME/protocol/openid-connect/auth",
+            "tokenUrl": "$IAM_BASE_URL/realms/$REALM_NAME/protocol/openid-connect/token",
             "displayNameClaim": "name",
             "userNameClaim": "preferred_username",
-            "userInfoUrl": "$BASE_URL/realms/$REALM_NAME/protocol/openid-connect/userinfo",
-            "logoutUrl": "$BASE_URL/realms/$REALM_NAME/protocol/openid-connect/logout?redirect_uri=https%3A%2F%2Fdemo.horus-analytics.chuv.ch",
+            "userInfoUrl": "$IAM_BASE_URL/realms/$REALM_NAME/protocol/openid-connect/userinfo",
+            "logoutUrl": "$IAM_BASE_EXTERNAL_URL/realms/$REALM_NAME/protocol/openid-connect/logout?redirect_uri=$redirect_uri_encoded",
             "clientId": "$CLIENT_ID",
             "clientSecret": "$CLIENT_SECRET",
             "scope": "openid group profile email roles team",
